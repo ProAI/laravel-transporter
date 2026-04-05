@@ -9,9 +9,6 @@ parameters:
 
     ignoreErrors:
         -
-            identifier: argument.type
-            path: src/Schema/DefinitionBuilder.php
-        -
             identifier: nullCoalesce.expr
             path: src/ReverseRelation.php
 
