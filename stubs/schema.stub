@@ -1,0 +1,14 @@
+<?php
+
+/*
+|--------------------------------------------------------------------------
+| Load The Cached Schema
+|--------------------------------------------------------------------------
+|
+| Here we will decode and unserialize the GraphQL Schema instance that
+| holds all of the schema information for a GraphQL request. Caching
+| the schema in this file is helpful to reduce the request time.
+|
+*/
+
+return \Opis\Closure\unserialize(base64_decode('{{schema}}'));

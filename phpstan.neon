@@ -1,0 +1,21 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    paths:
+        - src/
+
+    level: 5
+
+    ignoreErrors:
+        -
+            identifier: argument.type
+            path: src/Schema/DefinitionBuilder.php
+        -
+            identifier: nullCoalesce.expr
+            path: src/ReverseRelation.php
+
+    excludePaths:
+        analyse:
+            - src/ReversesRelationships.php
+            - src/ShieldsAttributes.php

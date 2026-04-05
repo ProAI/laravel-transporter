@@ -1,0 +1,81 @@
+{
+    "name": "proai/laravel-transporter",
+    "description": "Laravel package for building GraphQL apis.",
+    "type": "library",
+    "keywords": [
+        "laravel",
+        "graphql",
+        "graph-api",
+        "api"
+    ],
+    "homepage": "http://github.com/proai/laravel-transporter",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Markus J. Wetzel",
+            "email": "markuswetzel@gmx.net"
+        }
+    ],
+    "require": {
+        "php": "^8.3",
+        "illuminate/auth": "^12.0||^13.0",
+        "illuminate/console": "^12.0||^13.0",
+        "illuminate/contracts": "^12.0||^13.0",
+        "illuminate/database": "^12.0||^13.0",
+        "illuminate/filesystem": "^12.0||^13.0",
+        "illuminate/pagination": "^12.0||^13.0",
+        "illuminate/pipeline": "^12.0||^13.0",
+        "illuminate/support": "^12.0||^13.0",
+        "illuminate/validation": "^12.0||^13.0",
+        "opis/closure": "^4.0",
+        "webonyx/graphql-php": "^15.31"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^10.0||^11.0",
+        "pestphp/pest": "^3.0||^4.0",
+        "laravel/pint": "^1.29",
+        "larastan/larastan": "^3.9",
+        "pestphp/pest-plugin-type-coverage": "^3.0||^4.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "ProAI\\Transporter\\": "src/"
+        },
+        "files": [
+            "src/helpers.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "ProAI\\Transporter\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "ProAI\\Transporter\\TransporterServiceProvider"
+            ]
+        }
+    },
+    "scripts": {
+        "lint": "pint",
+        "test:lint": "pint --test",
+        "test:types": "phpstan analyse",
+        "test:type-coverage": "pest --type-coverage --min=100",
+        "test:unit": "pest",
+        "test": [
+            "@test:lint",
+            "@test:types",
+            "@test:type-coverage",
+            "@test:unit"
+        ]
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
+}
