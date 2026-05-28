@@ -213,6 +213,17 @@ Relations are loaded automatically by the default resolver. Access manually via:
 $context->relationLoader($model, 'posts')->asyncLoad();
 ```
 
+### Custom Loader
+
+For anything the other loaders don't cover (e.g. a raw query builder call on a table without an Eloquent model, or an external service call), defer arbitrary work through a closure. Multiple resolvers that pass the same closure (same definition and captured variables) share a single execution per request:
+
+```php
+$context->customLoader(fn () => DB::table('settings')->where('active', true)->get())
+    ->asyncLoad();
+```
+
+The closure can return whatever you need and the result is cached on the loader for the rest of the request.
+
 ## Connections (Cursor Pagination)
 
 Use the `@connection` directive on fields that return paginated results. The connection field name should end with `Connection` (e.g., `postsConnection` resolves the `posts` relation).

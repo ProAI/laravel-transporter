@@ -3,6 +3,7 @@
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User;
 use ProAI\Transporter\Context;
+use ProAI\Transporter\Loaders\CustomLoader;
 use ProAI\Transporter\Loaders\Loader;
 use ProAI\Transporter\ModelCache;
 
@@ -66,3 +67,34 @@ it('throws when registering a duplicate filter', function () {
         return $query;
     });
 })->throws(InvalidArgumentException::class);
+
+it('returns a custom loader instance', function () {
+    $container = app();
+    $context = new Context($container);
+
+    $loader = $context->customLoader(fn () => 'foo');
+
+    expect($loader)->toBeInstanceOf(CustomLoader::class);
+});
+
+it('returns the same custom loader instance for the same closure', function () {
+    $container = app();
+    $context = new Context($container);
+
+    $closure = fn () => 'foo';
+
+    $loader1 = $context->customLoader($closure);
+    $loader2 = $context->customLoader($closure);
+
+    expect($loader1)->toBe($loader2);
+});
+
+it('returns different custom loader instances for different closures', function () {
+    $container = app();
+    $context = new Context($container);
+
+    $loader1 = $context->customLoader(fn () => 'foo');
+    $loader2 = $context->customLoader(fn () => 'bar');
+
+    expect($loader1)->not->toBe($loader2);
+});

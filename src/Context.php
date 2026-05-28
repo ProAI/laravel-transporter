@@ -10,6 +10,7 @@ use Illuminate\Pipeline\Pipeline;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
+use ProAI\Transporter\Loaders\CustomLoader;
 use ProAI\Transporter\Loaders\Loader;
 use ProAI\Transporter\Loaders\RelationLoaderProxy;
 use ProAI\Transporter\Loaders\RelationLoaderRepository;
@@ -38,6 +39,13 @@ class Context
      * @var array
      */
     protected array $relationLoaders = [];
+
+    /**
+     * The context's shared custom loader instances.
+     *
+     * @var array
+     */
+    protected array $customLoaders = [];
 
     /**
      * The context's shared model cache.
@@ -163,6 +171,23 @@ class Context
         }
 
         return new RelationLoaderProxy($item, $this->relationLoaders[$key]);
+    }
+
+    /**
+     * Get custom loader instance for the given closure.
+     *
+     * @param  \Closure  $closure
+     * @return \ProAI\Transporter\Loaders\CustomLoader
+     */
+    public function customLoader(Closure $closure): CustomLoader
+    {
+        $key = $this->getClosureHash($closure);
+
+        if (! isset($this->customLoaders[$key])) {
+            $this->customLoaders[$key] = new CustomLoader($closure);
+        }
+
+        return $this->customLoaders[$key];
     }
 
     /**
