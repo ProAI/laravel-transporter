@@ -190,6 +190,8 @@ Fields without a `@resolver` directive are resolved automatically:
 
 Transporter uses deferred data loading to batch database queries and prevent N+1 problems.
 
+> **Note on closure identity:** Loaders that accept a closure (constraints on `loader`/`relationLoader`, the batch closure on `customLoader`) are shared per request by closure identity, which includes the closure's captured variables. Capturing request-scoped values like field args is fine and correctly produces one batch per distinct value. Capturing per-call-unique values like timestamps or random ids will silently disable batching, since every call produces a different identity and therefore a fresh loader.
+
 ### Model Loader
 
 Load models by primary key with automatic batching:
@@ -215,14 +217,18 @@ $context->relationLoader($model, 'posts')->asyncLoad();
 
 ### Custom Loader
 
-For anything the other loaders don't cover (e.g. a raw query builder call on a table without an Eloquent model, or an external service call), defer arbitrary work through a closure. Multiple resolvers that pass the same closure (same definition and captured variables) share a single execution per request:
+For anything the other loaders don't cover (e.g. a raw query builder call on a table without an Eloquent model, or an external service call), defer arbitrary work through a batch closure. This follows the [DataLoader](https://github.com/graphql/dataloader) pattern: the closure receives an array of keys and must return an array of values in the same order and of the same length. Multiple resolvers that pass the same closure (same definition and captured variables) share a single loader instance, so their keys are batched into one call:
 
 ```php
-$context->customLoader(fn () => DB::table('settings')->where('active', true)->get())
-    ->asyncLoad();
+$context->customLoader(function (array $ids) {
+        $rows = DB::table('settings')->whereIn('id', $ids)->get()->keyBy('id');
+
+        return array_map(fn ($id) => $rows[$id] ?? null, $ids);
+    })
+    ->asyncLoad($id);
 ```
 
-The closure can return whatever you need and the result is cached on the loader for the rest of the request.
+Duplicate keys within a batch are deduplicated, and results are cached per key for the rest of the request.
 
 ## Connections (Cursor Pagination)
 
